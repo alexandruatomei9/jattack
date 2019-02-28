@@ -1,4 +1,4 @@
-package com.softvision.jattack;
+package com.softvision.jattack.elements;
 
 public enum ElementType {
 
