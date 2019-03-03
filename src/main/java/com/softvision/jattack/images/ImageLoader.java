@@ -1,6 +1,6 @@
 package com.softvision.jattack.images;
 
-import com.softvision.jattack.elements.ElementType;
+import com.softvision.jattack.elements.invaders.InvaderType;
 import com.softvision.jattack.exception.UnableToLoadImagesException;
 import javafx.scene.image.Image;
 
@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class ImageLoader {
 
-    private final Map<ElementType, Image> images = new HashMap<>();
+    private final Map<InvaderType, Image> images = new HashMap<>();
     private final static String imagesBasePath = "src/main/resources/images/";
     private static ImageLoader instance;
 
@@ -20,30 +20,30 @@ public class ImageLoader {
         FileInputStream input = new FileInputStream(imagesBasePath + "plane.png");
         Image image = new Image(input);
         input.close();
-        images.put(ElementType.PLANE, image);
+        images.put(InvaderType.PLANE, image);
 
         input = new FileInputStream(imagesBasePath + "tank.png");
         image = new Image(input);
         input.close();
-        images.put(ElementType.TANK, image);
+        images.put(InvaderType.TANK, image);
 
         input = new FileInputStream(imagesBasePath + "boat.png");
         image = new Image(input);
         input.close();
-        images.put(ElementType.BOAT, image);
+        images.put(InvaderType.BOAT, image);
 
         input = new FileInputStream(imagesBasePath + "helicopter.png");
         image = new Image(input);
         input.close();
-        images.put(ElementType.HELICOPTER, image);
+        images.put(InvaderType.HELICOPTER, image);
 
         input = new FileInputStream(imagesBasePath + "background.png");
         image = new Image(input);
         input.close();
-        images.put(ElementType.BACKGROUND, image);
+        images.put(InvaderType.BACKGROUND, image);
     }
 
-    public static Image getImage(ElementType elementType){
+    public static Image getImage(InvaderType invaderType){
         if(instance == null){
             synchronized (ImageLoader.class) {
                 if(instance == null){
@@ -56,6 +56,6 @@ public class ImageLoader {
             }
         }
 
-        return instance.images.get(elementType);
+        return instance.images.get(invaderType);
     }
 }

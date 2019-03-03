@@ -8,11 +8,9 @@ public class RandomCoordinates implements Coordinates {
     private int x;
     private int y;
 
-    public RandomCoordinates() {}
-
     public RandomCoordinates(int maxWidth, int maxHeight) {
-        x = 1 + new Random().nextInt(maxWidth - 1);
-        y = 1 + new Random().nextInt(maxHeight - 1);
+        x = 50 + new Random().nextInt(maxWidth - 150);
+        y = 50 + new Random().nextInt(maxHeight - 150);
     }
 
     public int getX() {

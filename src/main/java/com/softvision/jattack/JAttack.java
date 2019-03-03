@@ -1,10 +1,14 @@
 package com.softvision.jattack;
 
-import com.softvision.jattack.elements.Element;
-import com.softvision.jattack.elements.ElementFactory;
-import com.softvision.jattack.elements.ElementType;
+import com.softvision.jattack.coordinates.CoordinatesCache;
+import com.softvision.jattack.elements.bullets.Bullet;
+import com.softvision.jattack.elements.invaders.Invader;
+import com.softvision.jattack.elements.invaders.InvaderFactory;
+import com.softvision.jattack.elements.invaders.InvaderType;
+import com.softvision.jattack.elements.bullets.HelicopterBullet;
 import com.softvision.jattack.images.ImageLoader;
 import com.softvision.jattack.util.Constants;
+import com.softvision.jattack.util.Util;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -23,31 +27,37 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JAttack extends Application {
+public class JAttack extends Application implements Runnable {
     private Canvas canvas;
-    private List<Element> elements;
+    private List<Invader> invaders;
+    private final Thread gameThread;
+    private GraphicsContext graphicsContext;
 
     @Override
     public void init() {
-        this.elements = new ArrayList<>();
+        this.invaders = new ArrayList<>();
+    }
+
+    public JAttack() {
+        gameThread = new Thread(this);
     }
 
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("J Attack 1.0 Alpha");
         Group root = new Group();
-        this.canvas = new Canvas(Constants.GRID_COLUMNS * Constants.ELEMENT_WIDTH, Constants.GRID_LINES * Constants.ELEMENT_HEIGHT);
-        GraphicsContext gc = this.canvas.getGraphicsContext2D();
+        this.canvas = new Canvas(Constants.WIDTH, Constants.HEIGHT);
+        graphicsContext = this.canvas.getGraphicsContext2D();
 
         generateElements();
 
-        elements.forEach(element -> drawImage(gc, element));
+        invaders.forEach(this::drawImage);
 
         StackPane holder = new StackPane();
         holder.getChildren().add(this.canvas);
         root.getChildren().add(holder);
 
-        ImagePattern backgroundImage = new ImagePattern(ImageLoader.getImage(ElementType.BACKGROUND));
+        ImagePattern backgroundImage = new ImagePattern(ImageLoader.getImage(InvaderType.BACKGROUND));
         holder.setBackground(new Background(new BackgroundFill(backgroundImage, CornerRadii.EMPTY, Insets.EMPTY)));
 
         Scene scene = new Scene(root);
@@ -73,6 +83,7 @@ public class JAttack extends Application {
         });
 
         primaryStage.show();
+        gameThread.start();
     }
 
     @Override
@@ -81,25 +92,81 @@ public class JAttack extends Application {
         System.out.println("Inside stop() method! Destroy resources. Perform Cleanup.");
     }
 
-    private void generateElements() {
-        for (int i = 0; i < Constants.NUMBER_OF_PLANES; i++) {
-            elements.add(ElementFactory.generateElement(ElementType.PLANE));
-        }
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                Thread.sleep(Util.getTick());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            for (int i = 0; i < invaders.size(); i++) {
+                synchronized (Util.lockOn()) {
+                    Invader invader = invaders.get(i);
+                    if (invader.wasHit()) {
+                        invader.decrementLife();
+                        if (invader.isDead()) {
+                            invaders.remove(invader);
+                            CoordinatesCache.getInstance().getCoordinatesInUse().remove(invader.getCoordinates());
+                        }
+                    } else {
+                        invader.shoot(graphicsContext);
+                        invader.move();
+                    }
+                }
+            }
 
-        for (int i = 0; i < Constants.NUMBER_OF_TANKS; i++) {
-            elements.add(ElementFactory.generateElement(ElementType.TANK));
-        }
-
-        for (int i = 0; i < Constants.NUMBER_OF_HELICOPTERS; i++) {
-            elements.add(ElementFactory.generateElement(ElementType.HELICOPTER));
+            redraw();
         }
     }
 
-    private void drawImage(GraphicsContext gc, Element element) {
-        gc.drawImage(element.getImage(),
-                element.getCoordinates().getX() * Constants.ELEMENT_WIDTH,
-                element.getCoordinates().getY() * Constants.ELEMENT_HEIGHT,
-                element.getImage().getWidth(),
-                element.getImage().getHeight());
+    private void generateElements() {
+        for (int i = 0; i < Constants.NUMBER_OF_PLANES; i++) {
+            invaders.add(InvaderFactory.generateElement(InvaderType.PLANE));
+        }
+
+        for (int i = 0; i < Constants.NUMBER_OF_TANKS; i++) {
+            invaders.add(InvaderFactory.generateElement(InvaderType.TANK));
+        }
+
+        for (int i = 0; i < Constants.NUMBER_OF_HELICOPTERS; i++) {
+            invaders.add(InvaderFactory.generateElement(InvaderType.HELICOPTER));
+        }
+    }
+
+    private void drawImage(Invader invader) {
+        graphicsContext.drawImage(invader.getImage(),
+                invader.getCoordinates().getX(),
+                invader.getCoordinates().getY(),
+                invader.getImage().getWidth(),
+                invader.getImage().getHeight());
+    }
+
+    private void drawBullet(Bullet bullet) {
+        switch (bullet.getShape()) {
+            case OVAL:
+                bullet.getCoordinates().setY(bullet.getCoordinates().getY() + bullet.getVelocity());
+                graphicsContext.setFill(bullet.getColor());
+                graphicsContext.fillOval(bullet.getCoordinates().getX(), bullet.getCoordinates().getY(), bullet.getBulletSize(), bullet.getBulletSize());
+                break;
+            case CHAR:
+                bullet.getCoordinates().setY(bullet.getCoordinates().getY() + bullet.getVelocity());
+                graphicsContext.setFill(bullet.getColor());
+                graphicsContext.fillText(((HelicopterBullet) bullet).getBulletShape(), bullet.getCoordinates().getX(), bullet.getCoordinates().getY(), bullet.getBulletSize());
+                break;
+            case RECTANGULAR:
+                bullet.getCoordinates().setY(bullet.getCoordinates().getY() + bullet.getVelocity());
+                graphicsContext.setFill(bullet.getColor());
+                graphicsContext.fillRect(bullet.getCoordinates().getX(), bullet.getCoordinates().getY(), bullet.getBulletSize(), bullet.getBulletSize());
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal bullet shape");
+        }
+    }
+
+    private void redraw() {
+        graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        invaders.forEach(this::drawImage);
+        CoordinatesCache.getInstance().getEnemyBullets().forEach(this::drawBullet);
     }
 }
