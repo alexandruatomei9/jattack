@@ -2,6 +2,8 @@ package com.softvision.jattack;
 
 import com.softvision.jattack.coordinates.CoordinatesCache;
 import com.softvision.jattack.elements.bullets.Bullet;
+import com.softvision.jattack.elements.bullets.PlaneBullet;
+import com.softvision.jattack.elements.bullets.TankBullet;
 import com.softvision.jattack.elements.invaders.Invader;
 import com.softvision.jattack.elements.invaders.InvaderFactory;
 import com.softvision.jattack.elements.invaders.InvaderType;
@@ -22,6 +24,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -147,17 +150,18 @@ public class JAttack extends Application implements Runnable {
             case OVAL:
                 bullet.getCoordinates().setY(bullet.getCoordinates().getY() + bullet.getVelocity());
                 graphicsContext.setFill(bullet.getColor());
-                graphicsContext.fillOval(bullet.getCoordinates().getX(), bullet.getCoordinates().getY(), bullet.getBulletSize(), bullet.getBulletSize());
+                graphicsContext.fillOval(bullet.getCoordinates().getX(), bullet.getCoordinates().getY(), ((PlaneBullet) bullet).getWidth(), ((PlaneBullet) bullet).getHeight());
                 break;
             case CHAR:
                 bullet.getCoordinates().setY(bullet.getCoordinates().getY() + bullet.getVelocity());
                 graphicsContext.setFill(bullet.getColor());
-                graphicsContext.fillText(((HelicopterBullet) bullet).getBulletShape(), bullet.getCoordinates().getX(), bullet.getCoordinates().getY(), bullet.getBulletSize());
+                graphicsContext.setFont(new Font("Arial Bold", ((HelicopterBullet) bullet).getBulletSize()));
+                graphicsContext.fillText(((HelicopterBullet) bullet).getBulletShape(), bullet.getCoordinates().getX(), bullet.getCoordinates().getY());
                 break;
-            case RECTANGULAR:
+            case CIRCLE:
                 bullet.getCoordinates().setY(bullet.getCoordinates().getY() + bullet.getVelocity());
                 graphicsContext.setFill(bullet.getColor());
-                graphicsContext.fillRect(bullet.getCoordinates().getX(), bullet.getCoordinates().getY(), bullet.getBulletSize(), bullet.getBulletSize());
+                graphicsContext.fillOval(bullet.getCoordinates().getX(), bullet.getCoordinates().getY(), ((TankBullet) bullet).getBulletDiameter(), ((TankBullet) bullet).getBulletDiameter());
                 break;
             default:
                 throw new IllegalArgumentException("Illegal bullet shape");

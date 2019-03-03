@@ -6,9 +6,10 @@ import javafx.scene.paint.Color;
 public class HelicopterBullet extends Bullet {
 
     private static final String BULLET_SHAPE = "¤";
+    public static final int BULLET_SIZE = 25;
 
     public HelicopterBullet(Coordinates coordinates) {
-        super(coordinates, Color.AZURE, 50, 25);
+        super(coordinates, Color.BLACK, 50);
     }
 
     @Override
@@ -18,5 +19,9 @@ public class HelicopterBullet extends Bullet {
 
     public String getBulletShape() {
         return BULLET_SHAPE;
+    }
+
+    public int getBulletSize() {
+        return BULLET_SIZE;
     }
 }

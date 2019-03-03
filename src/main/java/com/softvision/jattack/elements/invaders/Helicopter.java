@@ -7,6 +7,7 @@ import com.softvision.jattack.elements.bullets.HelicopterBullet;
 import com.softvision.jattack.images.ImageLoader;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.text.Font;
 
 public class Helicopter extends Invader {
     private final Image image = ImageLoader.getImage(InvaderType.HELICOPTER);
@@ -21,9 +22,11 @@ public class Helicopter extends Invader {
     }
 
     public void shoot(GraphicsContext graphicsContext) {
-        HelicopterBullet bullet = new HelicopterBullet(new FixedCoordinates(getCoordinates().getX() + 50, getCoordinates().getY() + 100));
+        //the x coordinate of the bullet is computed based on the width of the image for the invader and also the bullet width
+        HelicopterBullet bullet = new HelicopterBullet(new FixedCoordinates(getCoordinates().getX() + 35, getCoordinates().getY() + 100));
         graphicsContext.setFill(bullet.getColor());
-        graphicsContext.fillText(bullet.getBulletShape(), bullet.getCoordinates().getX(), bullet.getCoordinates().getY(), bullet.getBulletSize());
+        graphicsContext.setFont(new Font("Arial Bold", bullet.getBulletSize()));
+        graphicsContext.fillText(bullet.getBulletShape(), bullet.getCoordinates().getX(), bullet.getCoordinates().getY());
         CoordinatesCache.getInstance().getEnemyBullets().add(bullet);
     }
 }

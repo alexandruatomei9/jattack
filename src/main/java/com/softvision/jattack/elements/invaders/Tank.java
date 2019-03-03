@@ -3,7 +3,6 @@ package com.softvision.jattack.elements.invaders;
 import com.softvision.jattack.coordinates.Coordinates;
 import com.softvision.jattack.coordinates.CoordinatesCache;
 import com.softvision.jattack.coordinates.FixedCoordinates;
-import com.softvision.jattack.elements.bullets.Bullet;
 import com.softvision.jattack.elements.bullets.TankBullet;
 import com.softvision.jattack.images.ImageLoader;
 import javafx.scene.canvas.GraphicsContext;
@@ -22,9 +21,10 @@ public class Tank extends Invader {
     }
 
     public void shoot(GraphicsContext graphicsContext) {
-        Bullet bullet = new TankBullet(new FixedCoordinates(getCoordinates().getX() + 50, getCoordinates().getY() + 100));
+        //the x coordinate of the bullet is computed based on the width of the image for the invader and also the bullet width
+        TankBullet bullet = new TankBullet(new FixedCoordinates(getCoordinates().getX() + 17, getCoordinates().getY() + 100));
         graphicsContext.setFill(bullet.getColor());
-        graphicsContext.fillOval(bullet.getCoordinates().getX(), bullet.getCoordinates().getY(), bullet.getBulletSize(),bullet.getBulletSize());
+        graphicsContext.fillOval(bullet.getCoordinates().getX(), bullet.getCoordinates().getY(), bullet.getBulletDiameter(), bullet.getBulletDiameter());
         CoordinatesCache.getInstance().getEnemyBullets().add(bullet);
     }
 }
