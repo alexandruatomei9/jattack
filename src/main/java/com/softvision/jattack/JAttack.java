@@ -1,12 +1,14 @@
 package com.softvision.jattack;
 
 import com.softvision.jattack.coordinates.CoordinatesCache;
+import com.softvision.jattack.coordinates.FixedCoordinates;
+import com.softvision.jattack.elements.Defender;
 import com.softvision.jattack.elements.bullets.Bullet;
 import com.softvision.jattack.elements.bullets.PlaneBullet;
 import com.softvision.jattack.elements.bullets.TankBullet;
 import com.softvision.jattack.elements.invaders.Invader;
 import com.softvision.jattack.elements.invaders.InvaderFactory;
-import com.softvision.jattack.elements.invaders.InvaderType;
+import com.softvision.jattack.elements.invaders.ElementType;
 import com.softvision.jattack.elements.bullets.HelicopterBullet;
 import com.softvision.jattack.images.ImageLoader;
 import com.softvision.jattack.util.Constants;
@@ -35,6 +37,7 @@ public class JAttack extends Application implements Runnable {
     private List<Invader> invaders;
     private final Thread gameThread;
     private GraphicsContext graphicsContext;
+    private Defender defender;
 
     @Override
     public void init() {
@@ -56,21 +59,20 @@ public class JAttack extends Application implements Runnable {
 
         invaders.forEach(this::drawImage);
 
+        defender = new Defender(new FixedCoordinates((Constants.WIDTH / 2) - 50, Constants.HEIGHT - 150));
+        drawDefender(defender);
+
         StackPane holder = new StackPane();
         holder.getChildren().add(this.canvas);
         root.getChildren().add(holder);
 
-        ImagePattern backgroundImage = new ImagePattern(ImageLoader.getImage(InvaderType.BACKGROUND));
+        ImagePattern backgroundImage = new ImagePattern(ImageLoader.getImage(ElementType.BACKGROUND));
         holder.setBackground(new Background(new BackgroundFill(backgroundImage, CornerRadii.EMPTY, Insets.EMPTY)));
 
         Scene scene = new Scene(root);
         scene.setOnKeyPressed(e -> {
-            if (e.getCode() == KeyCode.LEFT) {
-                System.out.println("Left key was pressed");
-            }
-
-            if (e.getCode() == KeyCode.RIGHT) {
-                System.out.println("Right key was pressed");
+            if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT) {
+                defender.move(e.getCode());
             }
 
             if (e.getCode() == KeyCode.SPACE) {
@@ -125,15 +127,15 @@ public class JAttack extends Application implements Runnable {
 
     private void generateElements() {
         for (int i = 0; i < Constants.NUMBER_OF_PLANES; i++) {
-            invaders.add(InvaderFactory.generateElement(InvaderType.PLANE));
+            invaders.add(InvaderFactory.generateElement(ElementType.PLANE));
         }
 
         for (int i = 0; i < Constants.NUMBER_OF_TANKS; i++) {
-            invaders.add(InvaderFactory.generateElement(InvaderType.TANK));
+            invaders.add(InvaderFactory.generateElement(ElementType.TANK));
         }
 
         for (int i = 0; i < Constants.NUMBER_OF_HELICOPTERS; i++) {
-            invaders.add(InvaderFactory.generateElement(InvaderType.HELICOPTER));
+            invaders.add(InvaderFactory.generateElement(ElementType.HELICOPTER));
         }
     }
 
@@ -143,6 +145,14 @@ public class JAttack extends Application implements Runnable {
                 invader.getCoordinates().getY(),
                 invader.getImage().getWidth(),
                 invader.getImage().getHeight());
+    }
+
+    private void drawDefender(Defender defender) {
+        graphicsContext.drawImage(defender.getImage(),
+                defender.getCoordinates().getX(),
+                defender.getCoordinates().getY(),
+                defender.getImage().getWidth(),
+                defender.getImage().getHeight());
     }
 
     private void drawBullet(Bullet bullet) {
@@ -171,6 +181,7 @@ public class JAttack extends Application implements Runnable {
     private void redraw() {
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         invaders.forEach(this::drawImage);
+        drawDefender(defender);
         CoordinatesCache.getInstance().getEnemyBullets().forEach(this::drawBullet);
     }
 }

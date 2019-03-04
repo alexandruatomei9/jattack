@@ -1,10 +1,10 @@
 package com.softvision.jattack.elements.invaders;
 
-public enum InvaderType {
+public enum ElementType {
 
     PLANE,
     TANK,
-    BOAT,
     HELICOPTER,
-    BACKGROUND
+    BACKGROUND,
+    DEFENDER
 }

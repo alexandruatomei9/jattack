@@ -9,7 +9,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 public class Tank extends Invader {
-    private final Image image = ImageLoader.getImage(InvaderType.TANK);
+    private final Image image = ImageLoader.getImage(ElementType.TANK);
 
     public Tank(Coordinates coordinates) {
         super(coordinates);

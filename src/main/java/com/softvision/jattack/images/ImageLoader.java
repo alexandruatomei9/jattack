@@ -1,6 +1,6 @@
 package com.softvision.jattack.images;
 
-import com.softvision.jattack.elements.invaders.InvaderType;
+import com.softvision.jattack.elements.invaders.ElementType;
 import com.softvision.jattack.exception.UnableToLoadImagesException;
 import javafx.scene.image.Image;
 
@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class ImageLoader {
 
-    private final Map<InvaderType, Image> images = new HashMap<>();
+    private final Map<ElementType, Image> images = new HashMap<>();
     private final static String imagesBasePath = "src/main/resources/images/";
     private static ImageLoader instance;
 
@@ -20,30 +20,30 @@ public class ImageLoader {
         FileInputStream input = new FileInputStream(imagesBasePath + "plane.png");
         Image image = new Image(input);
         input.close();
-        images.put(InvaderType.PLANE, image);
+        images.put(ElementType.PLANE, image);
 
         input = new FileInputStream(imagesBasePath + "tank.png");
         image = new Image(input);
         input.close();
-        images.put(InvaderType.TANK, image);
-
-        input = new FileInputStream(imagesBasePath + "boat.png");
-        image = new Image(input);
-        input.close();
-        images.put(InvaderType.BOAT, image);
+        images.put(ElementType.TANK, image);
 
         input = new FileInputStream(imagesBasePath + "helicopter.png");
         image = new Image(input);
         input.close();
-        images.put(InvaderType.HELICOPTER, image);
+        images.put(ElementType.HELICOPTER, image);
 
         input = new FileInputStream(imagesBasePath + "background.png");
         image = new Image(input);
         input.close();
-        images.put(InvaderType.BACKGROUND, image);
+        images.put(ElementType.BACKGROUND, image);
+
+        input = new FileInputStream(imagesBasePath + "defender.png");
+        image = new Image(input);
+        input.close();
+        images.put(ElementType.DEFENDER, image);
     }
 
-    public static Image getImage(InvaderType invaderType){
+    public static Image getImage(ElementType elementType){
         if(instance == null){
             synchronized (ImageLoader.class) {
                 if(instance == null){
@@ -56,6 +56,6 @@ public class ImageLoader {
             }
         }
 
-        return instance.images.get(invaderType);
+        return instance.images.get(elementType);
     }
 }
