@@ -31,7 +31,7 @@ public class Util {
         Coordinates coordinates;
         do {
             coordinates = new RandomCoordinates(Constants.WIDTH, Constants.HEIGHT);
-        } while (coordinatesOverlapAnotherImage(coordinates, CoordinatesCache.getInstance().getCoordinatesInUse()));
+        } while (!coordinatesAreWithinBounds(coordinates) || coordinatesOverlapAnotherImage(coordinates, CoordinatesCache.getInstance().getCoordinatesInUse()));
 
         CoordinatesCache.getInstance().getCoordinatesInUse().add(coordinates);
 
@@ -54,7 +54,8 @@ public class Util {
     }
 
     public static boolean coordinatesAreWithinBounds(Coordinates coordinates) {
+        //returns if the coordinates for the generated invader are inside the bounds determined by the points A(50,50), B(50, WIDTH - 150), C(50, HEIGHT - 450), D(WIDTH - 150, HEIGHT - 450)
         return coordinates.getX() >= 50 && coordinates.getX() <= Constants.WIDTH - 150
-                && coordinates.getY() >= 50 && coordinates.getY() <= Constants.HEIGHT - 150;
+                && coordinates.getY() >= 50 && coordinates.getY() <= Constants.HEIGHT - 450;
     }
 }
