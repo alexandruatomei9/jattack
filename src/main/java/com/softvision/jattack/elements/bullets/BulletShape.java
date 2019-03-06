@@ -4,5 +4,6 @@ public enum BulletShape {
 
     CIRCLE,
     OVAL,
-    CHAR
+    CHAR,
+    RECTANGULAR
 }

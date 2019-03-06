@@ -3,6 +3,7 @@ package com.softvision.jattack.elements;
 import com.softvision.jattack.coordinates.Coordinates;
 import com.softvision.jattack.coordinates.CoordinatesCache;
 import com.softvision.jattack.coordinates.FixedCoordinates;
+import com.softvision.jattack.elements.bullets.DefenderBullet;
 import com.softvision.jattack.elements.bullets.PlaneBullet;
 import com.softvision.jattack.elements.invaders.ElementType;
 import com.softvision.jattack.images.ImageLoader;
@@ -23,10 +24,10 @@ public class Defender {
 
     public void shoot(GraphicsContext graphicsContext) {
         //the x coordinate of the bullet is computed based on the width of the image for the invader and also the bullet width
-        PlaneBullet bullet = new PlaneBullet(new FixedCoordinates(coordinates.getX() + 45, coordinates.getY() - 100));
+        DefenderBullet bullet = new DefenderBullet(new FixedCoordinates(coordinates.getX() + 45, coordinates.getY() - 30));
         graphicsContext.setFill(bullet.getColor());
-        graphicsContext.fillOval(bullet.getCoordinates().getX(), bullet.getCoordinates().getY(), bullet.getWidth(), bullet.getHeight());
-        CoordinatesCache.getInstance().getEnemyBullets().add(bullet);
+        graphicsContext.fillRect(bullet.getCoordinates().getX(), bullet.getCoordinates().getY(), bullet.getWidth(), bullet.getHeight());
+        CoordinatesCache.getInstance().getDefenderBullets().add(bullet);
     }
 
     public void move(KeyCode keyCode) {

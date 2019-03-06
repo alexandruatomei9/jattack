@@ -4,6 +4,7 @@ import com.softvision.jattack.coordinates.CoordinatesCache;
 import com.softvision.jattack.coordinates.FixedCoordinates;
 import com.softvision.jattack.elements.Defender;
 import com.softvision.jattack.elements.bullets.Bullet;
+import com.softvision.jattack.elements.bullets.DefenderBullet;
 import com.softvision.jattack.elements.bullets.PlaneBullet;
 import com.softvision.jattack.elements.bullets.TankBullet;
 import com.softvision.jattack.elements.invaders.Invader;
@@ -76,7 +77,7 @@ public class JAttack extends Application implements Runnable {
             }
 
             if (e.getCode() == KeyCode.SPACE) {
-                System.out.println("Space key was pressed");
+                defender.shoot(graphicsContext);
             }
         });
 
@@ -173,6 +174,11 @@ public class JAttack extends Application implements Runnable {
                 graphicsContext.setFill(bullet.getColor());
                 graphicsContext.fillOval(bullet.getCoordinates().getX(), bullet.getCoordinates().getY(), ((TankBullet) bullet).getBulletDiameter(), ((TankBullet) bullet).getBulletDiameter());
                 break;
+            case RECTANGULAR:
+                bullet.getCoordinates().setY(bullet.getCoordinates().getY() + bullet.getVelocity());
+                graphicsContext.setFill(bullet.getColor());
+                graphicsContext.fillRect(bullet.getCoordinates().getX(), bullet.getCoordinates().getY(), ((DefenderBullet) bullet).getWidth(), ((DefenderBullet) bullet).getHeight());
+                break;
             default:
                 throw new IllegalArgumentException("Illegal bullet shape");
         }
@@ -183,5 +189,6 @@ public class JAttack extends Application implements Runnable {
         invaders.forEach(this::drawImage);
         drawDefender(defender);
         CoordinatesCache.getInstance().getEnemyBullets().forEach(this::drawBullet);
+        CoordinatesCache.getInstance().getDefenderBullets().forEach(this::drawBullet);
     }
 }

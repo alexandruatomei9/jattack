@@ -9,10 +9,12 @@ public class CoordinatesCache {
 
     private List<Coordinates> coordinatesInUse;
     private List<Bullet> enemyBullets;
+    private List<Bullet> defenderBullets;
 
     private CoordinatesCache(){
         coordinatesInUse = new ArrayList<>();
         enemyBullets = new ArrayList<>();
+        defenderBullets = new ArrayList<>();
     }
 
     private static class SingletonHelper{
@@ -29,5 +31,9 @@ public class CoordinatesCache {
 
     public List<Bullet> getEnemyBullets() {
         return enemyBullets;
+    }
+
+    public List<Bullet> getDefenderBullets() {
+        return defenderBullets;
     }
 }
