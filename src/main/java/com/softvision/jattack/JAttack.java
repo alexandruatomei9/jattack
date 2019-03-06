@@ -32,6 +32,7 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class JAttack extends Application implements Runnable {
     private Canvas canvas;
@@ -39,6 +40,7 @@ public class JAttack extends Application implements Runnable {
     private final Thread gameThread;
     private GraphicsContext graphicsContext;
     private Defender defender;
+    private Random random = new Random();
 
     @Override
     public void init() {
@@ -116,8 +118,13 @@ public class JAttack extends Application implements Runnable {
                             CoordinatesCache.getInstance().getCoordinatesInUse().remove(invader.getCoordinates());
                         }
                     } else {
-                        invader.shoot(graphicsContext);
-                        invader.move();
+                        //either move or shoot
+                        boolean shouldShoot = random.nextBoolean();
+                        if(shouldShoot) {
+                            invader.shoot(graphicsContext);
+                        } else {
+                            invader.move();
+                        }
                     }
                 }
             }

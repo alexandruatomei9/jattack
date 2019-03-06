@@ -4,11 +4,13 @@ import com.softvision.jattack.coordinates.Coordinates;
 import com.softvision.jattack.coordinates.CoordinatesCache;
 import com.softvision.jattack.coordinates.Direction;
 import com.softvision.jattack.coordinates.FixedCoordinates;
+import com.softvision.jattack.elements.bullets.Bullet;
 import com.softvision.jattack.util.Util;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public abstract class Invader {
@@ -32,7 +34,23 @@ public abstract class Invader {
     }
 
     public boolean wasHit() {
-        return false;
+        boolean wasHit = false;
+
+        Iterator<Bullet> defenderBulletIterator = CoordinatesCache.getInstance().getDefenderBullets().iterator();
+        while (defenderBulletIterator.hasNext()) {
+            Bullet bullet = defenderBulletIterator.next();
+            int bulletX = bullet.getCoordinates().getX();
+            int bulletY = bullet.getCoordinates().getY();
+            if(this.coordinates.getX() <= bulletX && bulletX <= this.coordinates.getX() + 110) {
+                if(this.getCoordinates().getY() + 100 >= bulletY) {
+                    defenderBulletIterator.remove();
+                    wasHit = true;
+                    break;
+                }
+            }
+        }
+
+        return wasHit;
     }
 
     public void decrementLife() {
