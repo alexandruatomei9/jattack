@@ -3,6 +3,7 @@ package com.softvision.jattack.elements;
 import com.softvision.jattack.coordinates.Coordinates;
 import com.softvision.jattack.coordinates.CoordinatesCache;
 import com.softvision.jattack.coordinates.FixedCoordinates;
+import com.softvision.jattack.elements.bullets.Bullet;
 import com.softvision.jattack.elements.bullets.DefenderBullet;
 import com.softvision.jattack.elements.bullets.PlaneBullet;
 import com.softvision.jattack.elements.invaders.ElementType;
@@ -10,6 +11,8 @@ import com.softvision.jattack.images.ImageLoader;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+
+import java.util.Iterator;
 
 public class Defender {
 
@@ -28,6 +31,35 @@ public class Defender {
         graphicsContext.setFill(bullet.getColor());
         graphicsContext.fillRect(bullet.getCoordinates().getX(), bullet.getCoordinates().getY(), bullet.getWidth(), bullet.getHeight());
         CoordinatesCache.getInstance().getDefenderBullets().add(bullet);
+    }
+
+    public boolean wasHit() {
+        boolean wasHit = false;
+
+        Iterator<Bullet> invaderBulletsIterator = CoordinatesCache.getInstance().getEnemyBullets().iterator();
+        while (invaderBulletsIterator.hasNext()) {
+            Bullet bullet = invaderBulletsIterator.next();
+            int bulletX = bullet.getCoordinates().getX();
+            int bulletY = bullet.getCoordinates().getY();
+            if(this.coordinates.getX() <= bulletX && bulletX <= this.coordinates.getX() + 100) {
+                if(this.getCoordinates().getY() - 10 <= bulletY) {
+                    invaderBulletsIterator.remove();
+                    wasHit = true;
+                    System.out.println("Defender was hit");
+                    break;
+                }
+            }
+        }
+
+        return wasHit;
+    }
+
+    public void decreaseLife() {
+        this.life--;
+    }
+
+    public boolean isDead() {
+        return this.life <= 0;
     }
 
     public void move(KeyCode keyCode) {

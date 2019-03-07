@@ -1,5 +1,6 @@
 package com.softvision.jattack;
 
+import com.softvision.jattack.coordinates.Coordinates;
 import com.softvision.jattack.coordinates.CoordinatesCache;
 import com.softvision.jattack.coordinates.FixedCoordinates;
 import com.softvision.jattack.elements.Defender;
@@ -129,6 +130,12 @@ public class JAttack extends Application implements Runnable {
                 }
             }
 
+            synchronized (Util.lockOn()) {
+                if(this.defender.wasHit()) {
+                    this.defender.decreaseLife();
+                }
+            }
+
             redraw();
         }
     }
@@ -156,13 +163,16 @@ public class JAttack extends Application implements Runnable {
     }
 
     private void drawDefender(Defender defender) {
-        graphicsContext.drawImage(defender.getImage(),
-                defender.getCoordinates().getX(),
-                defender.getCoordinates().getY(),
-                defender.getImage().getWidth(),
-                defender.getImage().getHeight());
+        if(!defender.isDead()) {
+            graphicsContext.drawImage(defender.getImage(),
+                    defender.getCoordinates().getX(),
+                    defender.getCoordinates().getY(),
+                    defender.getImage().getWidth(),
+                    defender.getImage().getHeight());
+        }
     }
 
+    //TODO: this should be changed using polymorphism
     private void drawBullet(Bullet bullet) {
         switch (bullet.getShape()) {
             case OVAL:

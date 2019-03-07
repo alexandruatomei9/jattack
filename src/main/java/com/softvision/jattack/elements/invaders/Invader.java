@@ -58,7 +58,7 @@ public abstract class Invader {
     }
 
     public boolean isDead() {
-        return life == 0;
+        return life <= 0;
     }
 
     public abstract void shoot(GraphicsContext graphicsContext);
