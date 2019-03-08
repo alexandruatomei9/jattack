@@ -111,7 +111,6 @@ public class JAttack extends Application implements Runnable {
                 e.printStackTrace();
             }
             if (this.invaders.isEmpty()) {
-                System.out.println("You won");
                 CoordinatesCache.getInstance().getEnemyBullets().clear();
                 CoordinatesCache.getInstance().getDefenderBullets().clear();
                 redraw();
@@ -123,7 +122,6 @@ public class JAttack extends Application implements Runnable {
                         youWon.getHeight());
                 gameEnded = true;
             } else if (this.defender.isDead()) {
-                System.out.println("You lost");
                 CoordinatesCache.getInstance().getEnemyBullets().clear();
                 CoordinatesCache.getInstance().getDefenderBullets().clear();
                 invaders.clear();
