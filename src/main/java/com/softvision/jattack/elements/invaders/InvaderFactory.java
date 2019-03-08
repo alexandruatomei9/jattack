@@ -4,8 +4,8 @@ import com.softvision.jattack.util.Util;
 
 public class InvaderFactory {
 
-    public static Invader generateElement(ElementType elementType) {
-        switch (elementType) {
+    public static Invader generateElement(ImageType imageType) {
+        switch (imageType) {
             case TANK:
                 return new Tank(Util.computeCoordinates());
             case PLANE:

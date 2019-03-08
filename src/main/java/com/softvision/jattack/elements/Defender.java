@@ -5,8 +5,7 @@ import com.softvision.jattack.coordinates.CoordinatesCache;
 import com.softvision.jattack.coordinates.FixedCoordinates;
 import com.softvision.jattack.elements.bullets.Bullet;
 import com.softvision.jattack.elements.bullets.DefenderBullet;
-import com.softvision.jattack.elements.bullets.PlaneBullet;
-import com.softvision.jattack.elements.invaders.ElementType;
+import com.softvision.jattack.elements.invaders.ImageType;
 import com.softvision.jattack.images.ImageLoader;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -16,7 +15,7 @@ import java.util.Iterator;
 
 public class Defender {
 
-    private final Image image = ImageLoader.getImage(ElementType.DEFENDER);
+    private final Image image = ImageLoader.getImage(ImageType.DEFENDER);
     private Coordinates coordinates;
     private int life;
 
@@ -45,7 +44,6 @@ public class Defender {
                 if(this.getCoordinates().getY() - 10 <= bulletY) {
                     invaderBulletsIterator.remove();
                     wasHit = true;
-                    System.out.println("Defender was hit");
                     break;
                 }
             }

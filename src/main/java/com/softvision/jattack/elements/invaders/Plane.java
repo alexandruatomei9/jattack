@@ -9,7 +9,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 public class Plane extends Invader {
-    private final Image image = ImageLoader.getImage(ElementType.PLANE);
+    private final Image image = ImageLoader.getImage(ImageType.PLANE);
 
     public Plane(Coordinates coordinates) {
         super(coordinates);

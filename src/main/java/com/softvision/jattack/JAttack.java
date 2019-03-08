@@ -1,6 +1,5 @@
 package com.softvision.jattack;
 
-import com.softvision.jattack.coordinates.Coordinates;
 import com.softvision.jattack.coordinates.CoordinatesCache;
 import com.softvision.jattack.coordinates.FixedCoordinates;
 import com.softvision.jattack.elements.Defender;
@@ -10,7 +9,7 @@ import com.softvision.jattack.elements.bullets.PlaneBullet;
 import com.softvision.jattack.elements.bullets.TankBullet;
 import com.softvision.jattack.elements.invaders.Invader;
 import com.softvision.jattack.elements.invaders.InvaderFactory;
-import com.softvision.jattack.elements.invaders.ElementType;
+import com.softvision.jattack.elements.invaders.ImageType;
 import com.softvision.jattack.elements.bullets.HelicopterBullet;
 import com.softvision.jattack.images.ImageLoader;
 import com.softvision.jattack.util.Constants;
@@ -22,6 +21,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -70,7 +70,7 @@ public class JAttack extends Application implements Runnable {
         holder.getChildren().add(this.canvas);
         root.getChildren().add(holder);
 
-        ImagePattern backgroundImage = new ImagePattern(ImageLoader.getImage(ElementType.BACKGROUND));
+        ImagePattern backgroundImage = new ImagePattern(ImageLoader.getImage(ImageType.BACKGROUND));
         holder.setBackground(new Background(new BackgroundFill(backgroundImage, CornerRadii.EMPTY, Insets.EMPTY)));
 
         Scene scene = new Scene(root);
@@ -103,12 +103,40 @@ public class JAttack extends Application implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        boolean gameEnded = false;
+        while (!gameEnded) {
             try {
                 Thread.sleep(Util.getTick());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            if (this.invaders.isEmpty()) {
+                System.out.println("You won");
+                CoordinatesCache.getInstance().getEnemyBullets().clear();
+                CoordinatesCache.getInstance().getDefenderBullets().clear();
+                redraw();
+                Image youWon = ImageLoader.getImage(ImageType.YOU_WON);
+                graphicsContext.drawImage(youWon,
+                        Constants.WIDTH / 2 - 100,
+                        Constants.HEIGHT / 2 - 100,
+                        youWon.getWidth(),
+                        youWon.getHeight());
+                gameEnded = true;
+            } else if (this.defender.isDead()) {
+                System.out.println("You lost");
+                CoordinatesCache.getInstance().getEnemyBullets().clear();
+                CoordinatesCache.getInstance().getDefenderBullets().clear();
+                invaders.clear();
+                redraw();
+                Image youLost = ImageLoader.getImage(ImageType.YOU_LOST);
+                graphicsContext.drawImage(youLost,
+                        Constants.WIDTH / 2 - 100,
+                        Constants.HEIGHT / 2 - 100,
+                        youLost.getWidth(),
+                        youLost.getHeight());
+                gameEnded = true;
+            }
+
             for (int i = 0; i < invaders.size(); i++) {
                 synchronized (Util.lockOn()) {
                     Invader invader = invaders.get(i);
@@ -121,7 +149,7 @@ public class JAttack extends Application implements Runnable {
                     } else {
                         //either move or shoot
                         boolean shouldShoot = random.nextBoolean();
-                        if(shouldShoot) {
+                        if (shouldShoot) {
                             invader.shoot(graphicsContext);
                         } else {
                             invader.move();
@@ -131,26 +159,28 @@ public class JAttack extends Application implements Runnable {
             }
 
             synchronized (Util.lockOn()) {
-                if(this.defender.wasHit()) {
+                if (this.defender.wasHit()) {
                     this.defender.decreaseLife();
                 }
             }
 
-            redraw();
+            if(!gameEnded) {
+                redraw();
+            }
         }
     }
 
     private void generateElements() {
         for (int i = 0; i < Constants.NUMBER_OF_PLANES; i++) {
-            invaders.add(InvaderFactory.generateElement(ElementType.PLANE));
+            invaders.add(InvaderFactory.generateElement(ImageType.PLANE));
         }
 
         for (int i = 0; i < Constants.NUMBER_OF_TANKS; i++) {
-            invaders.add(InvaderFactory.generateElement(ElementType.TANK));
+            invaders.add(InvaderFactory.generateElement(ImageType.TANK));
         }
 
         for (int i = 0; i < Constants.NUMBER_OF_HELICOPTERS; i++) {
-            invaders.add(InvaderFactory.generateElement(ElementType.HELICOPTER));
+            invaders.add(InvaderFactory.generateElement(ImageType.HELICOPTER));
         }
     }
 
@@ -163,7 +193,7 @@ public class JAttack extends Application implements Runnable {
     }
 
     private void drawDefender(Defender defender) {
-        if(!defender.isDead()) {
+        if (!defender.isDead()) {
             graphicsContext.drawImage(defender.getImage(),
                     defender.getCoordinates().getX(),
                     defender.getCoordinates().getY(),

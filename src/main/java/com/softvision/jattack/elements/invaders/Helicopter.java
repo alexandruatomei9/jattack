@@ -10,7 +10,7 @@ import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 
 public class Helicopter extends Invader {
-    private final Image image = ImageLoader.getImage(ElementType.HELICOPTER);
+    private final Image image = ImageLoader.getImage(ImageType.HELICOPTER);
 
     public Helicopter(Coordinates coordinates) {
         super(coordinates);

@@ -1,6 +1,6 @@
 package com.softvision.jattack.images;
 
-import com.softvision.jattack.elements.invaders.ElementType;
+import com.softvision.jattack.elements.invaders.ImageType;
 import com.softvision.jattack.exception.UnableToLoadImagesException;
 import javafx.scene.image.Image;
 
@@ -10,40 +10,48 @@ import java.util.Map;
 
 public class ImageLoader {
 
-    private final Map<ElementType, Image> images = new HashMap<>();
+    private final Map<ImageType, Image> images = new HashMap<>();
     private final static String imagesBasePath = "src/main/resources/images/";
     private static ImageLoader instance;
 
     private ImageLoader() throws Exception {
-        System.getProperty("user.dir");
-
         FileInputStream input = new FileInputStream(imagesBasePath + "plane.png");
         Image image = new Image(input);
         input.close();
-        images.put(ElementType.PLANE, image);
+        images.put(ImageType.PLANE, image);
 
         input = new FileInputStream(imagesBasePath + "tank.png");
         image = new Image(input);
         input.close();
-        images.put(ElementType.TANK, image);
+        images.put(ImageType.TANK, image);
 
         input = new FileInputStream(imagesBasePath + "helicopter.png");
         image = new Image(input);
         input.close();
-        images.put(ElementType.HELICOPTER, image);
+        images.put(ImageType.HELICOPTER, image);
 
         input = new FileInputStream(imagesBasePath + "background.png");
         image = new Image(input);
         input.close();
-        images.put(ElementType.BACKGROUND, image);
+        images.put(ImageType.BACKGROUND, image);
 
         input = new FileInputStream(imagesBasePath + "defender.png");
         image = new Image(input);
         input.close();
-        images.put(ElementType.DEFENDER, image);
+        images.put(ImageType.DEFENDER, image);
+
+        input = new FileInputStream(imagesBasePath + "you_won.png");
+        image = new Image(input);
+        input.close();
+        images.put(ImageType.YOU_WON, image);
+
+        input = new FileInputStream(imagesBasePath + "you_lost.png");
+        image = new Image(input);
+        input.close();
+        images.put(ImageType.YOU_LOST, image);
     }
 
-    public static Image getImage(ElementType elementType){
+    public static Image getImage(ImageType imageType){
         if(instance == null){
             synchronized (ImageLoader.class) {
                 if(instance == null){
@@ -56,6 +64,6 @@ public class ImageLoader {
             }
         }
 
-        return instance.images.get(elementType);
+        return instance.images.get(imageType);
     }
 }

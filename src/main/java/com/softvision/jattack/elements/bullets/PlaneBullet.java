@@ -9,7 +9,7 @@ public class PlaneBullet extends Bullet {
     private static final int WIDTH = 10;
 
     public PlaneBullet(Coordinates coordinates) {
-        super(coordinates, Color.RED, 100);
+        super(coordinates, Color.RED, 80);
     }
 
     @Override
