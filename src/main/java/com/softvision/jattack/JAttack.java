@@ -200,40 +200,11 @@ public class JAttack extends Application implements Runnable {
         }
     }
 
-    //TODO: this should be changed using polymorphism
-    private void drawBullet(Bullet bullet) {
-        switch (bullet.getShape()) {
-            case OVAL:
-                bullet.getCoordinates().setY(bullet.getCoordinates().getY() + bullet.getVelocity());
-                graphicsContext.setFill(bullet.getColor());
-                graphicsContext.fillOval(bullet.getCoordinates().getX(), bullet.getCoordinates().getY(), ((PlaneBullet) bullet).getWidth(), ((PlaneBullet) bullet).getHeight());
-                break;
-            case CHAR:
-                bullet.getCoordinates().setY(bullet.getCoordinates().getY() + bullet.getVelocity());
-                graphicsContext.setFill(bullet.getColor());
-                graphicsContext.setFont(new Font("Arial Bold", ((HelicopterBullet) bullet).getBulletSize()));
-                graphicsContext.fillText(((HelicopterBullet) bullet).getBulletShape(), bullet.getCoordinates().getX(), bullet.getCoordinates().getY());
-                break;
-            case CIRCLE:
-                bullet.getCoordinates().setY(bullet.getCoordinates().getY() + bullet.getVelocity());
-                graphicsContext.setFill(bullet.getColor());
-                graphicsContext.fillOval(bullet.getCoordinates().getX(), bullet.getCoordinates().getY(), ((TankBullet) bullet).getBulletDiameter(), ((TankBullet) bullet).getBulletDiameter());
-                break;
-            case RECTANGULAR:
-                bullet.getCoordinates().setY(bullet.getCoordinates().getY() + bullet.getVelocity());
-                graphicsContext.setFill(bullet.getColor());
-                graphicsContext.fillRect(bullet.getCoordinates().getX(), bullet.getCoordinates().getY(), ((DefenderBullet) bullet).getWidth(), ((DefenderBullet) bullet).getHeight());
-                break;
-            default:
-                throw new IllegalArgumentException("Illegal bullet shape");
-        }
-    }
-
     private void redraw() {
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         invaders.forEach(this::drawImage);
         drawDefender(defender);
-        CoordinatesCache.getInstance().getEnemyBullets().forEach(this::drawBullet);
-        CoordinatesCache.getInstance().getDefenderBullets().forEach(this::drawBullet);
+        CoordinatesCache.getInstance().getEnemyBullets().forEach(b -> b.draw(graphicsContext));
+        CoordinatesCache.getInstance().getDefenderBullets().forEach(b -> b.draw(graphicsContext));
     }
 }

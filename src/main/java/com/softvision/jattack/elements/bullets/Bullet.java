@@ -1,6 +1,7 @@
 package com.softvision.jattack.elements.bullets;
 
 import com.softvision.jattack.coordinates.Coordinates;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public abstract class Bullet {
@@ -28,4 +29,6 @@ public abstract class Bullet {
     }
 
     public abstract BulletShape getShape();
+
+    public abstract void draw(GraphicsContext graphicsContext);
 }

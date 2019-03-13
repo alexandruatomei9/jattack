@@ -1,6 +1,7 @@
 package com.softvision.jattack.elements.bullets;
 
 import com.softvision.jattack.coordinates.Coordinates;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public class DefenderBullet extends Bullet {
@@ -15,6 +16,13 @@ public class DefenderBullet extends Bullet {
     @Override
     public BulletShape getShape() {
         return BulletShape.RECTANGULAR;
+    }
+
+    @Override
+    public void draw(GraphicsContext graphicsContext) {
+        this.getCoordinates().setY(this.getCoordinates().getY() + this.getVelocity());
+        graphicsContext.setFill(this.getColor());
+        graphicsContext.fillRect(this.getCoordinates().getX(), this.getCoordinates().getY(), this.getWidth(), this.getHeight());
     }
 
     public int getHeight() {
