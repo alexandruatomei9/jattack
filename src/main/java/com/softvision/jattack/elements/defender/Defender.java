@@ -8,6 +8,7 @@ import com.softvision.jattack.elements.bullets.Bullet;
 import com.softvision.jattack.elements.bullets.DefenderBullet;
 import com.softvision.jattack.elements.invaders.ImageType;
 import com.softvision.jattack.images.ImageLoader;
+import com.softvision.jattack.util.Constants;
 import com.softvision.jattack.util.Util;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.GraphicsContext;
@@ -73,9 +74,9 @@ public class Defender extends Element {
 
     public void move(KeyCode keyCode) {
         emptySpace(coordinates, graphicsContext, image.getWidth(), image.getHeight());
-        if (keyCode.equals(KeyCode.LEFT)) {
+        if (keyCode.equals(KeyCode.LEFT) && this.getCoordinates().getX() - 10 > 0) {
             this.getCoordinates().setX(this.getCoordinates().getX() - 10);
-        } else if (keyCode.equals(KeyCode.RIGHT)) {
+        } else if (keyCode.equals(KeyCode.RIGHT) && this.getCoordinates().getX() + 10 < Constants.WIDTH - 100) {
             this.getCoordinates().setX(this.getCoordinates().getX() + 10);
         }
         draw();
