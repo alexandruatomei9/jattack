@@ -28,9 +28,7 @@ public class Helicopter extends Invader {
     public void shoot(GraphicsContext graphicsContext) {
         //the x coordinate of the bullet is computed based on the width of the image for the invader and also the bullet width
         HelicopterBullet bullet = new HelicopterBullet(new FixedCoordinates(getCoordinates().getX() + 35, getCoordinates().getY() + 100), gameEnded, graphicsContext);
-        graphicsContext.setFill(bullet.getColor());
-        graphicsContext.setFont(new Font("Arial Bold", bullet.getBulletSize()));
-        graphicsContext.fillText(bullet.getBulletShape(), bullet.getCoordinates().getX(), bullet.getCoordinates().getY());
+        bullet.draw(graphicsContext);
         CoordinatesCache.getInstance().getEnemyBullets().add(bullet);
     }
 }

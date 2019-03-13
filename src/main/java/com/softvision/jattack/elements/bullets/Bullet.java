@@ -16,6 +16,7 @@ public abstract class Bullet extends Element {
     private Color color;
     private int velocity; //number of pixels that the bulled will be moved each second
     GraphicsContext graphicsContext;
+    private AtomicBoolean isBulletInBounds = new AtomicBoolean(true);
 
     Bullet(Coordinates coordinates, Color color, int velocity, AtomicBoolean gameEnded, GraphicsContext graphicsContext) {
         super(gameEnded);
@@ -42,8 +43,7 @@ public abstract class Bullet extends Element {
     public abstract void draw(GraphicsContext graphicsContext);
 
     public void run() {
-        boolean isBulletInBounds = true;
-        while (isBulletInBounds) {
+        while (!gameEnded.get() && isBulletInBounds.get()) {
             try {
                 Thread.sleep(Util.getTick());
             } catch (InterruptedException e) {
@@ -55,9 +55,13 @@ public abstract class Bullet extends Element {
                 if(coordinates.getY() >= Constants.HEIGHT) {
                     //if the enemy bullet is out of bounds we should remove it
                     CoordinatesCache.getInstance().getEnemyBullets().remove(this);
-                    isBulletInBounds = false;
+                    isBulletInBounds.set(false);
                 }
             }
         }
+    }
+
+    public AtomicBoolean isBulletInBounds() {
+        return isBulletInBounds;
     }
 }

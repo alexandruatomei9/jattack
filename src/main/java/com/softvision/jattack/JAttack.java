@@ -96,15 +96,17 @@ public class JAttack extends Application implements Runnable {
             }
         }
 
-        if (CoordinatesCache.getInstance().getCoordinatesInUse().isEmpty()) {
-            try {
-                for (Thread invaderThread : invaderThreads) {
-                    invaderThread.join();
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        try {
+            for (Thread invaderThread : invaderThreads) {
+                invaderThread.join();
             }
-            clearCanvas();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        clearCanvas();
+
+        if (CoordinatesCache.getInstance().getCoordinatesInUse().isEmpty()) {
             Image youWon = ImageLoader.getImage(ImageType.YOU_WON);
             graphicsContext.drawImage(youWon,
                     Constants.WIDTH / 2 - 100,
@@ -112,14 +114,6 @@ public class JAttack extends Application implements Runnable {
                     youWon.getWidth(),
                     youWon.getHeight());
         } else if (this.defender.isDead()) {
-            try {
-                for (Thread invaderThread : invaderThreads) {
-                    invaderThread.join();
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            clearCanvas();
             Image youLost = ImageLoader.getImage(ImageType.YOU_LOST);
             graphicsContext.drawImage(youLost,
                     Constants.WIDTH / 2 - 100,

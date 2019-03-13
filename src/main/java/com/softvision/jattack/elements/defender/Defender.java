@@ -55,6 +55,7 @@ public class Defender extends Element {
             if (this.coordinates.getX() <= bulletX && bulletX <= this.coordinates.getX() + 100) {
                 if (this.getCoordinates().getY() - 10 <= bulletY) {
                     invaderBulletsIterator.remove();
+                    bullet.isBulletInBounds().set(false);
                     wasHit = true;
                     break;
                 }

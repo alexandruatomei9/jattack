@@ -98,7 +98,7 @@ public abstract class Invader extends Element {
 
     public void run() {
         boolean invaderIsAlive = true;
-        while (invaderIsAlive) {
+        while (!gameEnded.get() && invaderIsAlive) {
             try {
                 Thread.sleep(Util.getTick());
             } catch (InterruptedException e) {
