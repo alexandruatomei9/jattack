@@ -22,6 +22,10 @@ public class Util {
         return tick;
     }
 
+    public static boolean randomBoolean() {
+        return random.nextBoolean();
+    }
+
     public static <T extends Enum<?>> T randomEnum(Class<T> clazz) {
         int x = random.nextInt(clazz.getEnumConstants().length);
         return clazz.getEnumConstants()[x];

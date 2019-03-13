@@ -2,15 +2,9 @@ package com.softvision.jattack;
 
 import com.softvision.jattack.coordinates.CoordinatesCache;
 import com.softvision.jattack.coordinates.FixedCoordinates;
-import com.softvision.jattack.elements.Defender;
-import com.softvision.jattack.elements.bullets.Bullet;
-import com.softvision.jattack.elements.bullets.DefenderBullet;
-import com.softvision.jattack.elements.bullets.PlaneBullet;
-import com.softvision.jattack.elements.bullets.TankBullet;
-import com.softvision.jattack.elements.invaders.Invader;
-import com.softvision.jattack.elements.invaders.InvaderFactory;
+import com.softvision.jattack.elements.defender.Defender;
 import com.softvision.jattack.elements.invaders.ImageType;
-import com.softvision.jattack.elements.bullets.HelicopterBullet;
+import com.softvision.jattack.elements.invaders.InvaderFactory;
 import com.softvision.jattack.images.ImageLoader;
 import com.softvision.jattack.util.Constants;
 import com.softvision.jattack.util.Util;
@@ -22,30 +16,27 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.ImagePattern;
-import javafx.scene.text.Font;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class JAttack extends Application implements Runnable {
-    private Canvas canvas;
-    private List<Invader> invaders;
     private final Thread gameThread;
+    private Thread defenderThread;
+    private Set<Thread> invaderThreads;
     private GraphicsContext graphicsContext;
     private Defender defender;
-    private Random random = new Random();
+    private AtomicBoolean gameEnded = new AtomicBoolean();
 
     @Override
     public void init() {
-        this.invaders = new ArrayList<>();
     }
 
     public JAttack() {
@@ -56,33 +47,25 @@ public class JAttack extends Application implements Runnable {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("J Attack 1.0 Alpha");
         Group root = new Group();
-        this.canvas = new Canvas(Constants.WIDTH, Constants.HEIGHT);
-        graphicsContext = this.canvas.getGraphicsContext2D();
+        Canvas canvas = new Canvas(Constants.WIDTH, Constants.HEIGHT);
+        graphicsContext = canvas.getGraphicsContext2D();
 
-        generateElements();
+        invaderThreads = generateInvaderThreads();
 
-        invaders.forEach(this::drawImage);
-
-        defender = new Defender(new FixedCoordinates((Constants.WIDTH / 2) - 50, Constants.HEIGHT - 150));
-        drawDefender(defender);
+        defender = new Defender(new FixedCoordinates((Constants.WIDTH / 2) - 50, Constants.HEIGHT - 150), graphicsContext, gameEnded);
+        defenderThread = new Thread(defender);
 
         StackPane holder = new StackPane();
-        holder.getChildren().add(this.canvas);
+        holder.getChildren().add(canvas);
+
         root.getChildren().add(holder);
 
-        ImagePattern backgroundImage = new ImagePattern(ImageLoader.getImage(ImageType.BACKGROUND));
-        holder.setBackground(new Background(new BackgroundFill(backgroundImage, CornerRadii.EMPTY, Insets.EMPTY)));
+        //ImagePattern backgroundImage = new ImagePattern(ImageLoader.getImage(ImageType.BACKGROUND));
+        //holder.setBackground(new Background(new BackgroundFill(backgroundImage, CornerRadii.EMPTY, Insets.EMPTY)));
+        holder.setBackground(new Background(new BackgroundFill(Color.ORANGE, CornerRadii.EMPTY, Insets.EMPTY)));
 
         Scene scene = new Scene(root);
-        scene.setOnKeyPressed(e -> {
-            if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT) {
-                defender.move(e.getCode());
-            }
-
-            if (e.getCode() == KeyCode.SPACE) {
-                defender.shoot(graphicsContext);
-            }
-        });
+        scene.setOnKeyPressed(defender.getEventHandler());
 
         primaryStage.setScene(scene);
 
@@ -93,6 +76,8 @@ public class JAttack extends Application implements Runnable {
 
         primaryStage.show();
         gameThread.start();
+        invaderThreads.forEach(Thread::start);
+        defenderThread.start();
     }
 
     @Override
@@ -103,108 +88,65 @@ public class JAttack extends Application implements Runnable {
 
     @Override
     public void run() {
-        boolean gameEnded = false;
-        while (!gameEnded) {
+        while (!gameEnded.get()) {
             try {
                 Thread.sleep(Util.getTick());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            if (this.invaders.isEmpty()) {
-                CoordinatesCache.getInstance().getEnemyBullets().clear();
-                CoordinatesCache.getInstance().getDefenderBullets().clear();
-                redraw();
-                Image youWon = ImageLoader.getImage(ImageType.YOU_WON);
-                graphicsContext.drawImage(youWon,
-                        Constants.WIDTH / 2 - 100,
-                        Constants.HEIGHT / 2 - 100,
-                        youWon.getWidth(),
-                        youWon.getHeight());
-                gameEnded = true;
-            } else if (this.defender.isDead()) {
-                CoordinatesCache.getInstance().getEnemyBullets().clear();
-                CoordinatesCache.getInstance().getDefenderBullets().clear();
-                invaders.clear();
-                redraw();
-                Image youLost = ImageLoader.getImage(ImageType.YOU_LOST);
-                graphicsContext.drawImage(youLost,
-                        Constants.WIDTH / 2 - 100,
-                        Constants.HEIGHT / 2 - 100,
-                        youLost.getWidth(),
-                        youLost.getHeight());
-                gameEnded = true;
-            }
+        }
 
-            for (int i = 0; i < invaders.size(); i++) {
-                synchronized (Util.lockOn()) {
-                    Invader invader = invaders.get(i);
-                    if (invader.wasHit()) {
-                        invader.decrementLife();
-                        if (invader.isDead()) {
-                            invaders.remove(invader);
-                            CoordinatesCache.getInstance().getCoordinatesInUse().remove(invader.getCoordinates());
-                        }
-                    } else {
-                        //either move or shoot
-                        boolean shouldShoot = random.nextBoolean();
-                        if (shouldShoot) {
-                            invader.shoot(graphicsContext);
-                        } else {
-                            invader.move();
-                        }
-                    }
+        if (CoordinatesCache.getInstance().getCoordinatesInUse().isEmpty()) {
+            try {
+                for (Thread invaderThread : invaderThreads) {
+                    invaderThread.join();
                 }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-
-            synchronized (Util.lockOn()) {
-                if (this.defender.wasHit()) {
-                    this.defender.decreaseLife();
+            clearCanvas();
+            Image youWon = ImageLoader.getImage(ImageType.YOU_WON);
+            graphicsContext.drawImage(youWon,
+                    Constants.WIDTH / 2 - 100,
+                    Constants.HEIGHT / 2 - 100,
+                    youWon.getWidth(),
+                    youWon.getHeight());
+        } else if (this.defender.isDead()) {
+            try {
+                for (Thread invaderThread : invaderThreads) {
+                    invaderThread.join();
                 }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-
-            if(!gameEnded) {
-                redraw();
-            }
+            clearCanvas();
+            Image youLost = ImageLoader.getImage(ImageType.YOU_LOST);
+            graphicsContext.drawImage(youLost,
+                    Constants.WIDTH / 2 - 100,
+                    Constants.HEIGHT / 2 - 100,
+                    youLost.getWidth(),
+                    youLost.getHeight());
         }
     }
 
-    private void generateElements() {
+    private Set<Thread> generateInvaderThreads() {
+        Set<Thread> threads = new HashSet<>();
         for (int i = 0; i < Constants.NUMBER_OF_PLANES; i++) {
-            invaders.add(InvaderFactory.generateElement(ImageType.PLANE));
+            threads.add(new Thread(InvaderFactory.generateElement(ImageType.PLANE, gameEnded, graphicsContext)));
         }
 
         for (int i = 0; i < Constants.NUMBER_OF_TANKS; i++) {
-            invaders.add(InvaderFactory.generateElement(ImageType.TANK));
+            threads.add(new Thread(InvaderFactory.generateElement(ImageType.TANK, gameEnded, graphicsContext)));
         }
 
         for (int i = 0; i < Constants.NUMBER_OF_HELICOPTERS; i++) {
-            invaders.add(InvaderFactory.generateElement(ImageType.HELICOPTER));
+            threads.add(new Thread(InvaderFactory.generateElement(ImageType.HELICOPTER, gameEnded, graphicsContext)));
         }
+
+        return threads;
     }
 
-    private void drawImage(Invader invader) {
-        graphicsContext.drawImage(invader.getImage(),
-                invader.getCoordinates().getX(),
-                invader.getCoordinates().getY(),
-                invader.getImage().getWidth(),
-                invader.getImage().getHeight());
-    }
-
-    private void drawDefender(Defender defender) {
-        if (!defender.isDead()) {
-            graphicsContext.drawImage(defender.getImage(),
-                    defender.getCoordinates().getX(),
-                    defender.getCoordinates().getY(),
-                    defender.getImage().getWidth(),
-                    defender.getImage().getHeight());
-        }
-    }
-
-    private void redraw() {
-        graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        invaders.forEach(this::drawImage);
-        drawDefender(defender);
-        CoordinatesCache.getInstance().getEnemyBullets().forEach(b -> b.draw(graphicsContext));
-        CoordinatesCache.getInstance().getDefenderBullets().forEach(b -> b.draw(graphicsContext));
+    private void clearCanvas() {
+        graphicsContext.clearRect(0, 0, Constants.WIDTH, Constants.HEIGHT);
     }
 }

@@ -9,11 +9,14 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class Helicopter extends Invader {
     private final Image image = ImageLoader.getImage(ImageType.HELICOPTER);
 
-    public Helicopter(Coordinates coordinates) {
-        super(coordinates);
+    Helicopter(Coordinates coordinates, AtomicBoolean gameEnded, GraphicsContext graphicsContext) {
+        super(coordinates, gameEnded, graphicsContext);
+        this.draw();
     }
 
     @Override
@@ -23,7 +26,7 @@ public class Helicopter extends Invader {
 
     public void shoot(GraphicsContext graphicsContext) {
         //the x coordinate of the bullet is computed based on the width of the image for the invader and also the bullet width
-        HelicopterBullet bullet = new HelicopterBullet(new FixedCoordinates(getCoordinates().getX() + 35, getCoordinates().getY() + 100));
+        HelicopterBullet bullet = new HelicopterBullet(new FixedCoordinates(getCoordinates().getX() + 35, getCoordinates().getY() + 100), gameEnded, graphicsContext);
         graphicsContext.setFill(bullet.getColor());
         graphicsContext.setFont(new Font("Arial Bold", bullet.getBulletSize()));
         graphicsContext.fillText(bullet.getBulletShape(), bullet.getCoordinates().getX(), bullet.getCoordinates().getY());
