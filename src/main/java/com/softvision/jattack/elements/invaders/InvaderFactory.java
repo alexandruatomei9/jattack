@@ -1,5 +1,6 @@
 package com.softvision.jattack.elements.invaders;
 
+import com.softvision.jattack.images.ImageType;
 import com.softvision.jattack.util.Util;
 import javafx.scene.canvas.GraphicsContext;
 

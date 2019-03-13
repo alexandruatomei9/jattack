@@ -6,7 +6,7 @@ import com.softvision.jattack.coordinates.FixedCoordinates;
 import com.softvision.jattack.elements.Element;
 import com.softvision.jattack.elements.bullets.Bullet;
 import com.softvision.jattack.elements.bullets.DefenderBullet;
-import com.softvision.jattack.elements.invaders.ImageType;
+import com.softvision.jattack.images.ImageType;
 import com.softvision.jattack.images.ImageLoader;
 import com.softvision.jattack.util.Constants;
 import com.softvision.jattack.util.Util;

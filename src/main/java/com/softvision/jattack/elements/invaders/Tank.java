@@ -5,6 +5,7 @@ import com.softvision.jattack.coordinates.CoordinatesCache;
 import com.softvision.jattack.coordinates.FixedCoordinates;
 import com.softvision.jattack.elements.bullets.TankBullet;
 import com.softvision.jattack.images.ImageLoader;
+import com.softvision.jattack.images.ImageType;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
