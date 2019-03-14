@@ -36,11 +36,19 @@ public abstract class Bullet extends Element {
         return color;
     }
 
-    int getVelocity() {
-        return velocity;
-    }
+    public abstract int getWidth();
 
-    public abstract void draw(GraphicsContext graphicsContext);
+    public abstract int getHeight();
+
+    public void draw(GraphicsContext graphicsContext) {
+        //clear old position
+        graphicsContext.clearRect(coordinates.getX(), coordinates.getY(), getWidth(), getHeight());
+
+        //draw bullet at new position
+        this.getCoordinates().setY(coordinates.getY() + velocity);
+        graphicsContext.setFill(color);
+        graphicsContext.fillRect(coordinates.getX(), coordinates.getY(), getWidth(), getHeight());
+    }
 
     public void run() {
         while (!gameEnded.get() && isBulletInBounds.get()) {

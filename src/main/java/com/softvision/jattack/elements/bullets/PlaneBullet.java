@@ -15,18 +15,6 @@ public class PlaneBullet extends Bullet {
         super(coordinates, Color.RED, 80, gameEnded, graphicsContext);
     }
 
-    @Override
-    public void draw(GraphicsContext graphicsContext) {
-        //clear old position
-        graphicsContext.setFill(Color.ORANGE);
-        graphicsContext.fillOval(this.getCoordinates().getX() - 1, this.getCoordinates().getY() - 1, this.getWidth() + 2, this.getHeight() + 2); //for some reason there's a border left
-
-        //draw bullet at new position
-        this.getCoordinates().setY(this.getCoordinates().getY() + this.getVelocity());
-        graphicsContext.setFill(this.getColor());
-        graphicsContext.fillOval(this.getCoordinates().getX(), this.getCoordinates().getY(), this.getWidth(), this.getHeight());
-    }
-
     public int getHeight() {
         return HEIGHT;
     }

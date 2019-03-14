@@ -17,18 +17,6 @@ public class DefenderBullet extends Bullet {
         super(coordinates, Color.AQUAMARINE, -100, gameEnded, graphicsContext);
     }
 
-    @Override
-    public void draw(GraphicsContext graphicsContext) {
-        //clear old position
-        graphicsContext.setFill(Color.ORANGE);
-        graphicsContext.fillRect(this.getCoordinates().getX(), this.getCoordinates().getY(), this.getWidth(), this.getHeight());
-
-        //draw bullet at new position
-        this.getCoordinates().setY(this.getCoordinates().getY() + this.getVelocity());
-        graphicsContext.setFill(this.getColor());
-        graphicsContext.fillRect(this.getCoordinates().getX(), this.getCoordinates().getY(), this.getWidth(), this.getHeight());
-    }
-
     public int getHeight() {
         return HEIGHT;
     }
@@ -40,7 +28,7 @@ public class DefenderBullet extends Bullet {
     @Override
     public void run() {
         boolean isBulletInBounds = true;
-        while (isBulletInBounds) {
+        while (isBulletInBounds && !gameEnded.get()) {
             try {
                 Thread.sleep(Util.getTick());
             } catch (InterruptedException e) {
