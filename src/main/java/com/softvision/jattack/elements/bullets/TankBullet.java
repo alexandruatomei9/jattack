@@ -4,27 +4,23 @@ import com.softvision.jattack.coordinates.Coordinates;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class TankBullet extends Bullet {
 
-    private static final int BULLET_DIAMETER = 10;
+    private static final int BULLET_SIZE = 10;
 
-    public TankBullet(Coordinates coordinates) {
-        super(coordinates, Color.GREEN, 30);
+    public TankBullet(Coordinates coordinates, AtomicBoolean gameEnded, GraphicsContext graphicsContext) {
+        super(coordinates, Color.GREEN, 30, gameEnded, graphicsContext);
     }
 
     @Override
-    public BulletShape getShape() {
-        return BulletShape.CIRCLE;
+    public int getWidth() {
+        return BULLET_SIZE;
     }
 
     @Override
-    public void draw(GraphicsContext graphicsContext) {
-        this.getCoordinates().setY(this.getCoordinates().getY() + this.getVelocity());
-        graphicsContext.setFill(this.getColor());
-        graphicsContext.fillOval(this.getCoordinates().getX(), this.getCoordinates().getY(), this.getBulletDiameter(), this.getBulletDiameter());
-    }
-
-    public int getBulletDiameter() {
-        return BULLET_DIAMETER;
+    public int getHeight() {
+        return BULLET_SIZE;
     }
 }

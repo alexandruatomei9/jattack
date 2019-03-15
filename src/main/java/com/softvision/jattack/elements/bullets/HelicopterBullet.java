@@ -5,33 +5,22 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class HelicopterBullet extends Bullet {
+    private static final int BULLET_SIZE = 5;
 
-    private static final String BULLET_SHAPE = "¤";
-    public static final int BULLET_SIZE = 25;
-
-    public HelicopterBullet(Coordinates coordinates) {
-        super(coordinates, Color.BLACK, 50);
+    public HelicopterBullet(Coordinates coordinates, AtomicBoolean gameEnded, GraphicsContext graphicsContext) {
+        super(coordinates, Color.BLACK, 50, gameEnded, graphicsContext);
     }
 
     @Override
-    public BulletShape getShape() {
-        return BulletShape.CHAR;
+    public int getWidth() {
+        return BULLET_SIZE;
     }
 
     @Override
-    public void draw(GraphicsContext graphicsContext) {
-        this.getCoordinates().setY(this.getCoordinates().getY() + this.getVelocity());
-        graphicsContext.setFill(this.getColor());
-        graphicsContext.setFont(new Font("Arial Bold", this.getBulletSize()));
-        graphicsContext.fillText(this.getBulletShape(), this.getCoordinates().getX(), this.getCoordinates().getY());
-    }
-
-    public String getBulletShape() {
-        return BULLET_SHAPE;
-    }
-
-    public int getBulletSize() {
+    public int getHeight() {
         return BULLET_SIZE;
     }
 }

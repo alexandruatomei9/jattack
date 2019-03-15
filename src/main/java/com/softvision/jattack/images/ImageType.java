@@ -1,4 +1,4 @@
-package com.softvision.jattack.elements.invaders;
+package com.softvision.jattack.images;
 
 public enum ImageType {
 

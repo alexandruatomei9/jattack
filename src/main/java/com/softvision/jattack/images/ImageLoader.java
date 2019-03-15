@@ -1,6 +1,5 @@
 package com.softvision.jattack.images;
 
-import com.softvision.jattack.elements.invaders.ImageType;
 import com.softvision.jattack.exception.UnableToLoadImagesException;
 import javafx.scene.image.Image;
 
