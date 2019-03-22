@@ -4,104 +4,82 @@ import com.softvision.jattack.coordinates.Coordinates;
 import com.softvision.jattack.coordinates.CoordinatesCache;
 import com.softvision.jattack.coordinates.FixedCoordinates;
 import com.softvision.jattack.elements.Element;
-import com.softvision.jattack.elements.bullets.Bullet;
-import com.softvision.jattack.elements.bullets.DefenderBullet;
-import com.softvision.jattack.images.ImageType;
 import com.softvision.jattack.images.ImageLoader;
+import com.softvision.jattack.images.ImageType;
+import com.softvision.jattack.manager.GameManager;
 import com.softvision.jattack.util.Constants;
 import com.softvision.jattack.util.Util;
 import javafx.event.EventHandler;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
 
-import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.List;
 
 public class Defender extends Element {
 
     private final Image image = ImageLoader.getImage(ImageType.DEFENDER);
-    private Coordinates coordinates;
-    private int life;
     private EventHandler<KeyEvent> eventHandler;
-    private GraphicsContext graphicsContext;
 
-    public Defender(Coordinates coordinates, GraphicsContext graphicsContext, AtomicBoolean gameEnded) {
-        super(gameEnded);
-        this.coordinates = coordinates;
-        this.life = 5;
-        this.graphicsContext = graphicsContext;
+    public Defender(Coordinates coordinates, GameManager gameManager) {
+        super(coordinates, gameManager, 5);
         this.eventHandler = new DefenderEventHandler(this);
-        this.draw();
+        gameManager.draw(this);
     }
 
-    public void shoot(GraphicsContext graphicsContext) {
+    public void shoot() {
         //the x coordinate of the bullet is computed based on the width of the image for the defender and also the bullet width
-        DefenderBullet bullet = new DefenderBullet(new FixedCoordinates(coordinates.getX() + 45, coordinates.getY() - 30), gameEnded, graphicsContext);
-        graphicsContext.setFill(bullet.getColor());
-        graphicsContext.fillRect(bullet.getCoordinates().getX(), bullet.getCoordinates().getY(), bullet.getWidth(), bullet.getHeight());
-        CoordinatesCache.getInstance().getDefenderBullets().add(bullet);
+        Coordinates bulletCoordinates = new FixedCoordinates(getCoordinates().getX() + 45, getCoordinates().getY() - 30);
+        bulletsCoordinates.add(bulletCoordinates);
+        CoordinatesCache.getInstance().getDefenderBulletsCoordinates().add(bulletCoordinates);
     }
 
-    public boolean wasHit() {
-        boolean wasHit = false;
-
-        Iterator<Bullet> invaderBulletsIterator = CoordinatesCache.getInstance().getEnemyBullets().iterator();
-        while (invaderBulletsIterator.hasNext()) {
-            Bullet bullet = invaderBulletsIterator.next();
-            int bulletX = bullet.getCoordinates().getX();
-            int bulletY = bullet.getCoordinates().getY();
-            if (this.coordinates.getX() <= bulletX && bulletX <= this.coordinates.getX() + 100) {
-                if (this.getCoordinates().getY() - 10 <= bulletY) {
-                    invaderBulletsIterator.remove();
-                    bullet.isBulletInBounds().set(false);
-                    wasHit = true;
-                    break;
-                }
-            }
-        }
-
-        return wasHit;
-    }
-
-    public void decreaseLife() {
-        this.life--;
-    }
-
-    public boolean isDead() {
-        return this.life <= 0;
-    }
-
-    public void move(KeyCode keyCode) {
-        emptySpace(coordinates, graphicsContext, image.getWidth(), image.getHeight());
+    void move(KeyCode keyCode) {
+        setPreviousPosition(getCoordinates());
         if (keyCode.equals(KeyCode.LEFT) && this.getCoordinates().getX() - 10 > 0) {
             this.getCoordinates().setX(this.getCoordinates().getX() - 10);
         } else if (keyCode.equals(KeyCode.RIGHT) && this.getCoordinates().getX() + 10 < Constants.WIDTH - 100) {
             this.getCoordinates().setX(this.getCoordinates().getX() + 10);
         }
-        draw();
+        gameManager.draw(this);
     }
 
     public Image getImage() {
         return image;
     }
 
-    public Coordinates getCoordinates() {
-        return coordinates;
+    @Override
+    public int getBulletHeight() {
+        return 10;
     }
 
-    public GraphicsContext getGraphicsContext() {
-        return graphicsContext;
+    @Override
+    public int getBulletWidth() {
+        return 7;
+    }
+
+    @Override
+    public int getBulletVelocity() {
+        return -80;
+    }
+
+    @Override
+    public Color getBulletColor() {
+        return Color.AQUAMARINE;
     }
 
     public EventHandler<KeyEvent> getEventHandler() {
         return eventHandler;
     }
 
+    public List<Coordinates> getBulletsCoordinates() {
+        return bulletsCoordinates;
+    }
+
     @Override
     public void run() {
-        while (!gameEnded.get()) {
+        while (!gameManager.gameEnded()) {
             try {
                 Thread.sleep(Util.getTick());
             } catch (InterruptedException e) {
@@ -109,21 +87,15 @@ public class Defender extends Element {
             }
 
             synchronized (Util.lockOn()) {
-                if (this.wasHit()) {
-                    this.decreaseLife();
-                    if(this.isDead()) {
-                        gameEnded.set(true);
+                if (gameManager.wasHit(this)) {
+                    gameManager.decrementLife(this);
+                    if (!gameManager.isAlive(this)) {
+                        gameManager.setGameEnded(true);
                     }
                 }
+
+                gameManager.drawElementBullets(this);
             }
         }
-    }
-
-    public void draw() {
-        graphicsContext.drawImage(this.getImage(),
-                this.getCoordinates().getX(),
-                this.getCoordinates().getY(),
-                this.getImage().getWidth(),
-                this.getImage().getHeight());
     }
 }

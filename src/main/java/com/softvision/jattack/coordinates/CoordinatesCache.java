@@ -1,7 +1,5 @@
 package com.softvision.jattack.coordinates;
 
-import com.softvision.jattack.elements.bullets.Bullet;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,13 +7,13 @@ import java.util.List;
 public class CoordinatesCache {
 
     private List<Coordinates> coordinatesInUse;
-    private List<Bullet> enemyBullets;
-    private List<Bullet> defenderBullets;
+    private List<Coordinates> enemyBulletsCoordinates;
+    private List<Coordinates> defenderBulletsCoordinates;
 
     private CoordinatesCache() {
         coordinatesInUse = Collections.synchronizedList(new ArrayList<>());
-        enemyBullets = Collections.synchronizedList(new ArrayList<>());
-        defenderBullets = Collections.synchronizedList(new ArrayList<>());
+        enemyBulletsCoordinates = Collections.synchronizedList(new ArrayList<>());
+        defenderBulletsCoordinates = Collections.synchronizedList(new ArrayList<>());
     }
 
     private static class SingletonHelper{
@@ -30,11 +28,11 @@ public class CoordinatesCache {
         return coordinatesInUse;
     }
 
-    public List<Bullet> getEnemyBullets() {
-        return enemyBullets;
+    public List<Coordinates> getEnemyBulletsCoordinates() {
+        return enemyBulletsCoordinates;
     }
 
-    public List<Bullet> getDefenderBullets() {
-        return defenderBullets;
+    public List<Coordinates> getDefenderBulletsCoordinates() {
+        return defenderBulletsCoordinates;
     }
 }

@@ -1,23 +1,19 @@
 package com.softvision.jattack.elements.invaders;
 
 import com.softvision.jattack.coordinates.Coordinates;
-import com.softvision.jattack.coordinates.CoordinatesCache;
 import com.softvision.jattack.coordinates.FixedCoordinates;
-import com.softvision.jattack.elements.bullets.HelicopterBullet;
+import com.softvision.jattack.elements.Element;
 import com.softvision.jattack.images.ImageLoader;
 import com.softvision.jattack.images.ImageType;
-import javafx.scene.canvas.GraphicsContext;
+import com.softvision.jattack.manager.GameManager;
 import javafx.scene.image.Image;
-import javafx.scene.text.Font;
+import javafx.scene.paint.Color;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
-public class Helicopter extends Invader {
+public class Helicopter extends Element {
     private final Image image = ImageLoader.getImage(ImageType.HELICOPTER);
 
-    Helicopter(Coordinates coordinates, AtomicBoolean gameEnded, GraphicsContext graphicsContext) {
-        super(coordinates, gameEnded, graphicsContext);
-        this.draw();
+    Helicopter(Coordinates coordinates, GameManager gameManager) {
+        super(coordinates, gameManager, 3);
     }
 
     @Override
@@ -25,10 +21,28 @@ public class Helicopter extends Invader {
         return image;
     }
 
-    public void shoot(GraphicsContext graphicsContext) {
+    public void shoot() {
         //the x coordinate of the bullet is computed based on the width of the image for the invader and also the bullet width
-        HelicopterBullet bullet = new HelicopterBullet(new FixedCoordinates(getCoordinates().getX() + 35, getCoordinates().getY() + 100), gameEnded, graphicsContext);
-        bullet.draw(graphicsContext);
-        CoordinatesCache.getInstance().getEnemyBullets().add(bullet);
+        addBulletCoordinates(new FixedCoordinates(getCoordinates().getX() + 35, getCoordinates().getY() + 100));
+    }
+
+    @Override
+    public int getBulletHeight() {
+        return 5;
+    }
+
+    @Override
+    public int getBulletWidth() {
+        return 5;
+    }
+
+    @Override
+    public int getBulletVelocity() {
+        return 30;
+    }
+
+    @Override
+    public Color getBulletColor() {
+        return Color.BLUE;
     }
 }

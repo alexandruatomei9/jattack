@@ -19,7 +19,7 @@ public class DefenderEventHandler implements EventHandler<KeyEvent> {
         }
 
         if (e.getCode() == KeyCode.SPACE) {
-            defender.shoot(defender.getGraphicsContext());
+            defender.shoot();
         }
     }
 }

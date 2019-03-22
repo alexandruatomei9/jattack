@@ -28,4 +28,12 @@ public class FixedCoordinates implements Coordinates {
     public void setY(int y) {
         this.y = y;
     }
+
+    @Override
+    public String toString() {
+        return "FixedCoordinates{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }
