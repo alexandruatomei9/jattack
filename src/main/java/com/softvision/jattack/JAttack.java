@@ -107,30 +107,23 @@ public class JAttack extends Application implements Runnable, GameManager {
             }
         }
 
-        try {
-            for (Thread invaderThread : invaderThreads) {
-                invaderThread.join();
+        synchronized (Util.lockOn()) {
+            clearCanvas();
+            if (this.getInvadersNumber() == 0) {
+                Image youWon = ImageLoader.getImage(ImageType.YOU_WON);
+                graphicsContext.drawImage(youWon,
+                        Constants.WIDTH / 2 - 100,
+                        Constants.HEIGHT / 2 - 100,
+                        youWon.getWidth(),
+                        youWon.getHeight());
+            } else if (!this.defender.isAlive()) {
+                Image youLost = ImageLoader.getImage(ImageType.YOU_LOST);
+                graphicsContext.drawImage(youLost,
+                        Constants.WIDTH / 2 - 100,
+                        Constants.HEIGHT / 2 - 100,
+                        youLost.getWidth(),
+                        youLost.getHeight());
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        clearCanvas();
-
-        if (this.getInvadersNumber() == 0) {
-            Image youWon = ImageLoader.getImage(ImageType.YOU_WON);
-            graphicsContext.drawImage(youWon,
-                    Constants.WIDTH / 2 - 100,
-                    Constants.HEIGHT / 2 - 100,
-                    youWon.getWidth(),
-                    youWon.getHeight());
-        } else if (!this.defender.isAlive()) {
-            Image youLost = ImageLoader.getImage(ImageType.YOU_LOST);
-            graphicsContext.drawImage(youLost,
-                    Constants.WIDTH / 2 - 100,
-                    Constants.HEIGHT / 2 - 100,
-                    youLost.getWidth(),
-                    youLost.getHeight());
         }
     }
 

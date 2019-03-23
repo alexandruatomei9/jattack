@@ -6,7 +6,6 @@ import com.softvision.jattack.coordinates.Direction;
 import com.softvision.jattack.coordinates.FixedCoordinates;
 import com.softvision.jattack.elements.Element;
 import com.softvision.jattack.util.Util;
-import javafx.scene.canvas.GraphicsContext;
 
 import java.util.ArrayList;
 import java.util.List;
